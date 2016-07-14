@@ -21,10 +21,10 @@ class CustomNavigationController: UINavigationController {
     
     // MARK - Private methods
     private func configureNavigationBar() {
-        navigationBar.setBackgroundImage(UIImage(), forBarMetrics: UIBarMetrics.Default)
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationBar.shadowImage = UIImage()
-        navigationBar.translucent = true
-        navigationBarHidden = true
+        navigationBar.isTranslucent = true
+        isNavigationBarHidden = true
     }
     
 }

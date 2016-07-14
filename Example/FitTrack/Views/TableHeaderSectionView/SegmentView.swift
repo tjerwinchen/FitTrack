@@ -16,8 +16,8 @@ class SegmentView: UIView {
     private let buttonOvalLayer = CAShapeLayer()
 
     // MARK - Lifecycle
-    override func drawRect(rect: CGRect) {
-        super.drawRect(rect)
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
         
         configureSegmentView()
         createButtonOvalLayer()
@@ -27,20 +27,20 @@ class SegmentView: UIView {
     private func configureSegmentView() {
         layer.cornerRadius = segmentViewCornerRadius
         layer.borderWidth = segmentViewBoederWidth
-        layer.borderColor = UIColor.whiteColor().CGColor
+        layer.borderColor = UIColor.white().cgColor
     }
     
     private func createButtonOvalLayer() {
         let buttonOvalLayerHeight = bounds.height
         let buttonOvalLayerWidth = bounds.width / 2
-        let buttonOvalPath = UIBezierPath(roundedRect: CGRectMake(0, 0, buttonOvalLayerWidth, buttonOvalLayerHeight), cornerRadius: segmentViewCornerRadius)
-        buttonOvalLayer.path = buttonOvalPath.CGPath
-        buttonOvalLayer.fillColor = UIColor.whiteColor().CGColor
+        let buttonOvalPath = UIBezierPath(roundedRect: CGRect(x: 0, y: 0, width: buttonOvalLayerWidth, height: buttonOvalLayerHeight), cornerRadius: segmentViewCornerRadius)
+        buttonOvalLayer.path = buttonOvalPath.cgPath
+        buttonOvalLayer.fillColor = UIColor.white().cgColor
         layer.addSublayer(buttonOvalLayer)
     }
     
     // MARK - Public methods
-    func setIndicatorPosition(position: CGFloat) {
-        buttonOvalLayer.position = CGPointMake(position, bounds.origin.y)
+    func setIndicatorPosition(_ position: CGFloat) {
+        buttonOvalLayer.position = CGPoint(x: position, y: bounds.origin.y)
     }
 }

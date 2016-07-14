@@ -25,8 +25,8 @@ public class AnimationView: UIView {
     internal var roundActivityButtons = [RoundActivityButton]()
     internal var gapBetweenActivityButtons: CGFloat = 0.0
     internal var realActivityButtonWidth: CGFloat = 0.0
-    public var animationFirstPhaseDidFinish: (Void -> Void)?
-    public var animationDidFinish: (Void -> Void)?
+    public var animationFirstPhaseDidFinish: ((Void) -> Void)?
+    public var animationDidFinish: ((Void) -> Void)?
     
     private var activities: [Activity]?
     private var currentActiveRoundButtonTag = 0
@@ -44,18 +44,18 @@ public class AnimationView: UIView {
     }
     
     // MARK - Actions
-    func roundButtonPressed(roundButton: RoundActivityButton!) {
-        if roundButton.selected == false {
-            roundButton.selected = true
+    func roundButtonPressed(_ roundButton: RoundActivityButton!) {
+        if roundButton.isSelected == false {
+            roundButton.isSelected = true
             let currentActiveRoundButton = roundActivityButtons[currentActiveRoundButtonTag]
-            currentActiveRoundButton.selected = false
+            currentActiveRoundButton.isSelected = false
             currentActiveRoundButtonTag = roundButton.tag
             activityContainerView.flipView(activities![currentActiveRoundButtonTag])
         }
     }
     
     // MARK - Public methods
-    public func configureSubviews(activitiesCount: Int, activities: [Activity]) {
+    public func configureSubviews(_ activitiesCount: Int, activities: [Activity]) {
         self.activitiesCount = activitiesCount
         self.activities = activities
         createAndSetStartPositionRoundActivityButtons()
@@ -74,9 +74,9 @@ public class AnimationView: UIView {
         let deltaWidth = gapBetweenActivityButtons / CGFloat(activitiesCount)
         realActivityButtonWidth = (buttonWidth - deltaWidth - gapBetweenActivityButtons)
         
-        centerActivityRoundButton = RoundActivityButton.init(frame: CGRectMake(0, 0, realActivityButtonWidth * animateScalFirsteButtonCoefficient, realActivityButtonWidth * animateScalFirsteButtonCoefficient))
-        centerActivityRoundButton!.backgroundColor = UIColor.clearColor()
-        centerActivityRoundButton!.center = CGPointMake(bounds.width / 2, (bounds.height / 2) / dropButtonsPositionCoefficient)
+        centerActivityRoundButton = RoundActivityButton.init(frame: CGRect(x: 0, y: 0, width: realActivityButtonWidth * animateScalFirsteButtonCoefficient, height: realActivityButtonWidth * animateScalFirsteButtonCoefficient))
+        centerActivityRoundButton!.backgroundColor = UIColor.clear()
+        centerActivityRoundButton!.center = CGPoint(x: bounds.width / 2, y: (bounds.height / 2) / dropButtonsPositionCoefficient)
         
         centerActivityRoundButtonIndex = activitiesCount%2 == 0 ? -1 : activitiesCount / 2
         
@@ -84,26 +84,26 @@ public class AnimationView: UIView {
         
         addSubview(centerActivityRoundButton!)
         for index in 0..<activitiesCount {
-            let startFrame = CGRectMake(gapBetweenActivityButtons + (gapBetweenActivityButtons + realActivityButtonWidth) * CGFloat(index), -realActivityButtonWidth, realActivityButtonWidth, realActivityButtonWidth)
+            let startFrame = CGRect(x: gapBetweenActivityButtons + (gapBetweenActivityButtons + realActivityButtonWidth) * CGFloat(index), y: -realActivityButtonWidth, width: realActivityButtonWidth, height: realActivityButtonWidth)
             let roundButton = RoundActivityButton.init(frame: startFrame)
             let activity = activities![index]
             let normalStateImage = activity.activityResource.normalActivityButtonImage
             let selectStateImage = activity.activityResource.selectedActivityButtonImage
-            roundButton.setBackgroundImage(normalStateImage, forState: .Normal)
-            roundButton.setBackgroundImage(selectStateImage, forState: .Selected)
-            roundButton.setBackgroundImage(selectStateImage, forState: [.Highlighted, .Selected])
-            roundButton.userInteractionEnabled = false
+            roundButton.setBackgroundImage(normalStateImage, for: UIControlState())
+            roundButton.setBackgroundImage(selectStateImage, for: .selected)
+            roundButton.setBackgroundImage(selectStateImage, for: [.highlighted, .selected])
+            roundButton.isUserInteractionEnabled = false
             roundButton.tag = index
-            roundButton.addTarget(self, action: #selector(AnimationView.roundButtonPressed(_:)), forControlEvents: .TouchUpInside)
+            roundButton.addTarget(self, action: #selector(AnimationView.roundButtonPressed(_:)), for: .touchUpInside)
             roundActivityButtons.append(roundButton)
             subview?.addSubview(roundButton)
         }
         
         // it's necessary when collecting all items. First item should be always bring to front
-        subview?.bringSubviewToFront(roundActivityButtons[0])
+        subview?.bringSubview(toFront: roundActivityButtons[0])
         
-        activityContainerView.transform = CGAffineTransformMakeScale(transformScale, transformScale)
-        subview?.bringSubviewToFront(activityContainerView)
+        activityContainerView.transform = CGAffineTransform(scaleX: transformScale, y: transformScale)
+        subview?.bringSubview(toFront: activityContainerView)
     }
     
 }

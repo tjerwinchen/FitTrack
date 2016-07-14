@@ -22,32 +22,32 @@ class TableHeaderSectionView: UITableViewHeaderFooterView, CellInterface {
     private weak var segmentView: SegmentView!
     
     // MARK - Lifecycle
-    override func drawRect(rect: CGRect) {
-        super.drawRect(rect)
+    override func draw(_ rect: CGRect) {
+        super.draw(rect)
         
         configureButtons()
     }
     
     // MARK - Provate methods
     private func configureButtons() {
-        timelineButton.setTitleColor(UIColor.activeSegmentButtonFontBackgroundColor(), forState: .Selected)
-        timelineButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        statisticsButton.setTitleColor(UIColor.activeSegmentButtonFontBackgroundColor(), forState: .Selected)
-        statisticsButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        timelineButton.selected = true
-        statisticsButton.selected = false
+        timelineButton.setTitleColor(UIColor.activeSegmentButtonFontBackgroundColor(), for: .selected)
+        timelineButton.setTitleColor(UIColor.white(), for: UIControlState())
+        statisticsButton.setTitleColor(UIColor.activeSegmentButtonFontBackgroundColor(), for: .selected)
+        statisticsButton.setTitleColor(UIColor.white(), for: UIControlState())
+        timelineButton.isSelected = true
+        statisticsButton.isSelected = false
     }
 
     // MARK - Actions
-    @IBAction func timelineButtonTapped(sender: AnyObject) {
-        timelineButton.selected = true
-        statisticsButton.selected = false
+    @IBAction func timelineButtonTapped(_ sender: AnyObject) {
+        timelineButton.isSelected = true
+        statisticsButton.isSelected = false
         segmentView.setIndicatorPosition(startIndicatorPosition)
     }
 
-    @IBAction func statisticsButtonTapped(sender: AnyObject) {
-        statisticsButton.selected = true
-        timelineButton.selected = false
+    @IBAction func statisticsButtonTapped(_ sender: AnyObject) {
+        statisticsButton.isSelected = true
+        timelineButton.isSelected = false
         segmentView.setIndicatorPosition(statisticsButton.bounds.width)
     }
 

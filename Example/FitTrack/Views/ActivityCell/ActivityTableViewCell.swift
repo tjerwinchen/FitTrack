@@ -13,7 +13,7 @@ class ActivityTableViewCell: UITableViewCell, CellInterface {
     @IBOutlet
     private weak var backgroundImageView: UIImageView!
     
-    func setBackgroundImage(image: UIImage) {
+    func setBackgroundImage(_ image: UIImage) {
         backgroundImageView.image = image
     }
     

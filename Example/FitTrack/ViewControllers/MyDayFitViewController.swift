@@ -14,13 +14,13 @@ private let tableHeaderSectionViewHeight: CGFloat = 114.0
 private let tableCellHeight: CGFloat = 105.0
 private let rowsCount = 10
 private let tableHeaderSectionViewHeightDelta: CGFloat = 64.0
-private let animationDuration: NSTimeInterval = 0.3
+private let animationDuration: TimeInterval = 0.3
 private let maxHeaderSectionAlphaValue: CGFloat = 0.95
 private let cornerRadius: CGFloat = 12.0
 
 private enum HeaderSectionState {
-    case VisibleState
-    case UnvisibleState
+    case visibleState
+    case unvisibleState
 }
 
 class MyDayFitViewController: UIViewController {
@@ -41,7 +41,7 @@ class MyDayFitViewController: UIViewController {
     private weak var activityTableViewTrailingConstraint: NSLayoutConstraint!
     
     private var tableHeaderSectionView: TableHeaderSectionView!
-    private var headerSectionState = HeaderSectionState.UnvisibleState
+    private var headerSectionState = HeaderSectionState.unvisibleState
     private var backgroundHeaderSectionView: UIView!
     
     // MARK - Lifecycle
@@ -49,18 +49,18 @@ class MyDayFitViewController: UIViewController {
         super.viewDidLoad()
         
         backgroundHeaderSectionView = UIView(frame: helperView.frame)
-        animationView.frame = CGRectMake(view.frame.origin.x, view.frame.origin.y, view.frame.width - activityTableViewLeadingConstraint.constant + activityTableViewTrailingConstraint.constant, view.frame.height)
+        animationView.frame = CGRect(x: view.frame.origin.x, y: view.frame.origin.y, width: view.frame.width - activityTableViewLeadingConstraint.constant + activityTableViewTrailingConstraint.constant, height: view.frame.height)
         setTitleView()
         setupTableView()
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
         configureAnimationView()
         
-        let delayTime = dispatch_time(DISPATCH_TIME_NOW, Int64(0.3 * Double(NSEC_PER_SEC))) // perform animation after 0.3 s
-        dispatch_after(delayTime, dispatch_get_main_queue()) {
+        let delayTime = DispatchTime.now() + Double(Int64(0.3 * Double(NSEC_PER_SEC))) / Double(NSEC_PER_SEC) // perform animation after 0.3 s
+        DispatchQueue.main.after(when: delayTime) {
             self.animationView.performAnimation()
         }
     }
@@ -73,39 +73,39 @@ class MyDayFitViewController: UIViewController {
     }
     
     private func setupTableView() {
-        activityTableView.registerNib(ActivityTableViewCell.cellNib, forCellReuseIdentifier: ActivityTableViewCell.id)
-        activityTableView.registerNib(TableHeaderSectionView.cellNib, forHeaderFooterViewReuseIdentifier: TableHeaderSectionView.id)
+        activityTableView.register(ActivityTableViewCell.cellNib, forCellReuseIdentifier: ActivityTableViewCell.id)
+        activityTableView.register(TableHeaderSectionView.cellNib, forHeaderFooterViewReuseIdentifier: TableHeaderSectionView.id)
     }
     
     private func configureAnimationView() {
         let activities = ActivityDataProvider.generateActivities()
         animationView.configureSubviews(activities.count, activities: activities)
         animationView.animationFirstPhaseDidFinish = {
-            [UIView.beginAnimations(nil, context: nil)]
-            [UIView.setAnimationDuration(animationDuration)]
+            let _ = [UIView.beginAnimations(nil, context: nil)]
+            let _ = [UIView.setAnimationDuration(animationDuration)]
             self.animationView.frame = CGRect(x: 0.0, y: 0.0, width: self.animationView.frame.width, height: self.animationView.frame.height - (self.animationView.frame.height / ratioCoefficient) - tableHeaderSectionViewHeightDelta)
             self.activityTableView.tableHeaderView = self.animationView
-            self.navigationController!.navigationBarHidden = false
-            [UIView.commitAnimations]
+            self.navigationController!.isNavigationBarHidden = false
+            let _ = [UIView.commitAnimations]
         }
     }
     
     // MARK - UITableViewDatasource
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return rowsCount
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCellWithIdentifier(ActivityTableViewCell.id, forIndexPath: indexPath)
+    func tableView(_ tableView: UITableView, cellForRowAtIndexPath indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: ActivityTableViewCell.id, for: indexPath)
         return cell
     }
     
     // MARK - UITableViewDelegate
-    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: IndexPath) {
         let activityTableViewCell = cell as! ActivityTableViewCell
-        if indexPath.row == 0 {
+        if (indexPath as NSIndexPath).row == 0 {
             activityTableViewCell.setBackgroundImage(UIImage(named: "bg_white_top")!)
-        } else if indexPath.row == rowsCount - 1 {
+        } else if (indexPath as NSIndexPath).row == rowsCount - 1 {
             activityTableViewCell.setBackgroundImage(UIImage(named: "bg_white_bottom")!)
             cell.clipsToBounds = true
         } else {
@@ -113,35 +113,35 @@ class MyDayFitViewController: UIViewController {
         }
     }
     
-    func tableView(tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        let headerSction = tableView.dequeueReusableHeaderFooterViewWithIdentifier(TableHeaderSectionView.id) as! TableHeaderSectionView
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let headerSction = tableView.dequeueReusableHeaderFooterView(withIdentifier: TableHeaderSectionView.id) as! TableHeaderSectionView
         tableHeaderSectionView = headerSction
-        backgroundHeaderSectionView.backgroundColor = UIColor.clearColor()
+        backgroundHeaderSectionView.backgroundColor = UIColor.clear()
         tableHeaderSectionView.backgroundView = backgroundHeaderSectionView
         return headerSction
     }
     
-    func tableView(tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
         return tableHeaderSectionViewHeight
     }
     
-    func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    func tableView(_ tableView: UITableView, heightForRowAtIndexPath indexPath: IndexPath) -> CGFloat {
         return tableCellHeight
     }
     
     // MARK - UIScrollViewDelegate
-    func scrollViewDidScroll(scrollView: UIScrollView!) {
+    func scrollViewDidScroll(_ scrollView: UIScrollView!) {
         if scrollView.contentOffset.y > 0 {
             animationView.alpha = 1 - scrollView.contentOffset.y / animationView.frame.height
             helperView.alpha = min(1 - animationView.alpha, maxHeaderSectionAlphaValue)
-            if animationView.alpha <= 0 && headerSectionState == HeaderSectionState.UnvisibleState {
-                backgroundHeaderSectionView.backgroundColor = helperView.backgroundColor?.colorWithAlphaComponent(maxHeaderSectionAlphaValue)
+            if animationView.alpha <= 0 && headerSectionState == HeaderSectionState.unvisibleState {
+                backgroundHeaderSectionView.backgroundColor = helperView.backgroundColor?.withAlphaComponent(maxHeaderSectionAlphaValue)
                 tableHeaderSectionView.backgroundView = backgroundHeaderSectionView
-                headerSectionState = HeaderSectionState.VisibleState
-            } else if animationView.alpha > 0 && headerSectionState == HeaderSectionState.VisibleState {
-                backgroundHeaderSectionView.backgroundColor = UIColor.clearColor()
+                headerSectionState = HeaderSectionState.visibleState
+            } else if animationView.alpha > 0 && headerSectionState == HeaderSectionState.visibleState {
+                backgroundHeaderSectionView.backgroundColor = UIColor.clear()
                 tableHeaderSectionView.backgroundView = backgroundHeaderSectionView
-                headerSectionState = HeaderSectionState.UnvisibleState
+                headerSectionState = HeaderSectionState.unvisibleState
             }
         } else {
             helperView.alpha = 0

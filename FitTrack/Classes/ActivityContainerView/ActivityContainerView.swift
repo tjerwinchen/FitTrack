@@ -8,14 +8,14 @@
 
 import UIKit
 
-private let flipAnimationDuration: NSTimeInterval = 0.2
+private let flipAnimationDuration: TimeInterval = 0.2
 
 private let animateTransformScaleX: CGFloat = 0.98
-private let animateStateDuration: NSTimeInterval = 1
+private let animateStateDuration: TimeInterval = 1
 private let animateSpringDamping: CGFloat = 0.3
 private let animateSpringVelocity: CGFloat = 0.7
 
-class ActivityContainerView: UIView {
+class ActivityContainerView: UIView, CAAnimationDelegate {
         
     @IBOutlet
     private weak var containerView: UIView!
@@ -58,30 +58,30 @@ class ActivityContainerView: UIView {
     }
     
     // MARK - Public methods
-    func flipView(activity: Activity) {
-        self.containerView.transform = CGAffineTransformIdentity
+    func flipView(_ activity: Activity) {
+        self.containerView.transform = CGAffineTransform.identity
         configureViewsBeforeFlip(activity)
         let transform :CATransform3D = CATransform3DMakeRotation(CGFloat(M_PI), 0, 1, 0) // rotate around Y
         let flipAnimation = CABasicAnimation(keyPath: "transform")
-        flipAnimation.fromValue = NSValue(CATransform3D: CATransform3DIdentity)
-        flipAnimation.toValue = NSValue(CATransform3D: transform)
+        flipAnimation.fromValue = NSValue(caTransform3D: CATransform3DIdentity)
+        flipAnimation.toValue = NSValue(caTransform3D: transform)
         flipAnimation.duration = flipAnimationDuration
         flipAnimation.fillMode = kCAFillModeBoth
-        flipAnimation.removedOnCompletion = true
+        flipAnimation.isRemovedOnCompletion = true
         flipAnimation.delegate = self
-        subview!.layer.addAnimation(flipAnimation, forKey: "transform")
+        subview!.layer.add(flipAnimation, forKey: "transform")
     }
     
-    override func animationDidStop(animation: CAAnimation, finished flag: Bool) {
+    func animationDidStop(_ animation: CAAnimation, finished flag: Bool) {
         if flag == true {
             configureViewsAfterFlip()
-            UIView.animateWithDuration(animateStateDuration,
+            UIView.animate(withDuration: animateStateDuration,
                 delay: 0,
                 usingSpringWithDamping: animateSpringDamping,
                 initialSpringVelocity: animateSpringVelocity,
-                options: .CurveLinear,
+                options: .curveLinear,
                 animations: {
-                    self.containerView.transform = CGAffineTransformMakeScale(animateTransformScaleX, 1)
+                    self.containerView.transform = CGAffineTransform(scaleX: animateTransformScaleX, y: 1)
                 }, completion: nil)
         }
     }
@@ -95,10 +95,10 @@ class ActivityContainerView: UIView {
         containerGradientView.layer.cornerRadius = containerGradientView.frame.height / 2
     }
     
-    private func configureViewsBeforeFlip(activity: Activity) {
-        titleLabel.hidden = true
-        currentProgressLabel.hidden = true
-        goalLabel.hidden = true
+    private func configureViewsBeforeFlip(_ activity: Activity) {
+        titleLabel.isHidden = true
+        currentProgressLabel.isHidden = true
+        goalLabel.isHidden = true
         
         titleLabel.text = activity.title
         currentProgressLabel.text = String(activity.currentProgress.cleanValue)
@@ -125,9 +125,9 @@ class ActivityContainerView: UIView {
     }
     
     private func configureViewsAfterFlip() {
-        titleLabel.hidden = false
-        currentProgressLabel.hidden = false
-        goalLabel.hidden = false
+        titleLabel.isHidden = false
+        currentProgressLabel.isHidden = false
+        goalLabel.isHidden = false
     }
     
 }

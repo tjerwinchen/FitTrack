@@ -13,8 +13,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        UIApplication.sharedApplication().statusBarStyle = .LightContent
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        UIApplication.shared().statusBarStyle = .lightContent
         
         ZoomStartupAnimation.performAnimation(window!, navControllerIdentifier: "navigationController", backgroundImage: UIImage(named: "bg")!, animationImage: UIImage(named: "logo")!)
         
